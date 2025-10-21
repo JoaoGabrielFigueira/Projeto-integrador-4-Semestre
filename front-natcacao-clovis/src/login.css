@@ -1,0 +1,503 @@
+/* Reset e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Seção esquerda - Formulário de login */
+#login_form {
+    width: 50%;
+    background-color: #FFFCFC;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    position: relative;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Logo */
+#login_form img {
+    width: 200px;
+    height: 110px;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Título do logo */
+#login_form h1 {
+    font-size: 35px;
+    font-weight: bold;
+    color: #3949AB;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#login_form p {
+    font-size: 15px;
+    font-weight: bold;
+    color: #504D4D;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Container dos inputs */
+#login_form div {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 12px;
+}
+
+#loginInputs {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Labels */
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #504D4D;
+    margin-bottom: 1px;
+    font-weight: bold;
+    width: 100%;
+    text-align: left;
+}
+
+/* Inputs */
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f2f5;
+    font-size: 17px;
+    margin-bottom: 0;
+    outline: none;
+    align-self: center;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    background-color: #e8f0fe;
+}
+
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+    color: #504D4D;
+}
+
+/* Botão ENTRAR */
+button[type="submit"] {
+    width: 100%;
+    max-width: 200px;
+    padding: 12px;
+    background-color: #00B0FF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #3949AB;
+}
+
+/* Seção direita - Área aquática */
+#login-image {
+    width: 50%;
+    background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Padrão de azulejos da piscina */
+#login-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+    background-size: 40px 40px;
+    background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+}
+
+/* Ondas de água */
+#login-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+    background-size: 100px 50px;
+    animation: wave 3s ease-in-out infinite;
+}
+
+/* Imagem de fundo da piscina */
+#login-image img:first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* Animais marinhos */
+#login-image img:last-child {
+    position: relative;
+    z-index: 2;
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 20px;
+    animation: float 2s ease-in-out infinite;
+}
+
+
+@keyframes wave {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Responsividade para Tablets */
+@media (max-width: 1024px) and (min-width: 769px) {
+    body {
+        flex-direction: column;
+    }
+
+    #login_form,
+    #login-image {
+        width: 100%;
+    }
+
+    #login-image {
+        height: 45vh;
+    }
+
+    #login_form {
+        padding: 24px 20px;
+        height: auto;
+        gap: 6px;
+    }
+    
+    #login-form {
+        width: 100%;
+        max-width: 360px;
+    }
+    
+    #login_form img {
+        width: 140px;
+        height: 76px;
+        margin-bottom: 8px;
+    }
+    
+    #login_form h1 {
+        font-size: 26px;
+        margin-bottom: 4px;
+    }
+    
+    #login_form p {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    #login_form div,
+    #loginInputs,
+    .input-group {
+        max-width: 300px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    button[type="submit"] {
+        max-width: 220px;
+        padding: 10px;
+        margin-top: 4px;
+    }
+}
+
+/* Responsividade para Tablets Pequenos */
+@media (max-width: 768px) and (min-width: 481px) {
+    body {
+        flex-direction: column;
+    }
+    
+    #login_form,
+    #login-image {
+        width: 100%;
+    }
+    
+    #login-image {
+        height: 40vh;
+    }
+
+    #login_form {
+        padding: 20px 18px;
+        height: auto;
+        background: #FFFFFF;
+        border-radius: 12px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        margin: 12px auto 20px;
+    }
+    
+    #login_form img {
+        width: 110px;
+        height: 60px;
+        margin-bottom: 8px;
+    }
+    
+    #login_form h1 {
+        font-size: 22px;
+        margin-bottom: 6px;
+    }
+    
+    #login_form p {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    #login_form div,
+    #loginInputs {
+        max-width: 320px;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px;
+        font-size: 15px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+    }
+    
+    button[type="submit"] {
+        width: 100%;
+        max-width: 320px;
+        padding: 12px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+}
+
+/* Estilos de feedback */
+.feedback {
+    font-size: 11px;
+    margin-top: 1px;
+    min-height: 15px;
+    width: 100%;
+    text-align: center;
+}
+
+.feedback-error {
+    color: #dc3545;
+}
+
+.feedback-success {
+    color: #28a745;
+}
+
+/* Botão mais próximo dos inputs */
+button[type="submit"] {
+    margin-top: 4px;
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 480px) {
+    body {
+        flex-direction: column;
+    }
+    
+    #login_form,
+    #login-image {
+        width: 100%;
+    }
+    
+    #login-image {
+        height: 32vh;
+    }
+    
+    #login_form {
+        padding: 16px 14px;
+        height: auto;
+        background: #FFFFFF;
+        border-radius: 12px;
+        box-shadow: 0 6px 22px rgba(0,0,0,0.08);
+        margin: 8px auto 16px;
+    }
+    
+    #login_form img {
+        width: 90px;
+        height: 50px;
+        margin-bottom: 6px;
+    }
+    
+    #login_form h1 {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+    
+    #login_form p {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+    
+    #login_form div,
+    #loginInputs {
+        max-width: 300px;
+    }
+    
+    label {
+        font-size: 12px;
+        margin-bottom: 1px;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px;
+        font-size: 15px;
+        margin-bottom: 6px;
+        border-radius: 10px;
+    }
+    
+    .feedback {
+        font-size: 11px;
+        min-height: 14px;
+        margin-top: 2px;
+    }
+    
+    button[type="submit"] {
+        width: 100%;
+        max-width: 300px;
+        padding: 12px;
+        font-size: 13px;
+        border-radius: 10px;
+        margin-top: 6px;
+    }
+    
+    /* Ajustar animações para dispositivos móveis */
+    #login-image::after {
+        animation: none; /* Desabilitar animação de ondas em mobile para melhor performance */
+    }
+    
+    #login-image img:last-child {
+        animation: none; /* Desabilitar animação de flutuação em mobile */
+        max-width: 70%;
+    }
+}
+
+/* Orientação Landscape para celulares */
+@media (max-width: 768px) and (orientation: landscape) {
+    #login_form,
+    #login-image {
+        height: auto;
+    }
+    
+    #login_form {
+        padding: 16px;
+        margin: 8px auto 12px;
+    }
+    
+    #login_form img {
+        width: 80px;
+        height: 45px;
+        margin-bottom: 5px;
+    }
+    
+    #login_form h1 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+    
+    #login_form p {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+    
+    #login_form div,
+    #loginInputs {
+        max-width: 180px;
+    }
+    
+    input[type="email"],
+    input[type="password"] {
+        padding: 12px;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    button[type="submit"] {
+        width: 100%;
+        max-width: 320px;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .feedback {
+        font-size: 11px;
+        margin-top: 4px;
+        min-height: 16px;
+    }
+
+    .feedback.error {
+        color: red
+    }
+
+    .feedback-success {
+        color: green;
+    }
+}
