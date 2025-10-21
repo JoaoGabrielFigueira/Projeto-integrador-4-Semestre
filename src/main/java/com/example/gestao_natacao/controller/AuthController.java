@@ -2,9 +2,12 @@ package com.example.gestao_natacao.controller;
 
 import com.example.gestao_natacao.model.Usuario.Usuario;
 import com.example.gestao_natacao.services.UsuarioService;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.gestao_natacao.dto.JwtResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,23 +31,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         boolean autenticado = usuarioService.autenticarUsuario(loginRequest.getEmail(), loginRequest.getSenha());
 
         if (autenticado) {
-            return new ResponseEntity<>("Autenticado com sucesso!", HttpStatus.OK);
+            String jwtToken = "ESTE_É_O_SEU_TOKEN";
+            return new ResponseEntity<>(new JwtResponse(jwtToken), HttpStatus.OK);
         } else{
-          return new ResponseEntity<>("Credenciais Invalidas!", HttpStatus.UNAUTHORIZED);
+          return new ResponseEntity<>("{\"message\": \"Credenciais inválidas.\"}", HttpStatus.UNAUTHORIZED);
         }
     }
 }
 
+@Setter
+@Getter
 class LoginRequest {
     private String email;
     private String senha;
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
 }
