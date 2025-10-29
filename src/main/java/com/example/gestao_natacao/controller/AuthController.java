@@ -1,5 +1,6 @@
 package com.example.gestao_natacao.controller;
 
+import com.example.gestao_natacao.dto.UsuarioCadastroDto;
 import com.example.gestao_natacao.model.Usuario.Usuario;
 import com.example.gestao_natacao.services.UsuarioService;
 import lombok.Getter;
@@ -20,9 +21,9 @@ public class AuthController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<String> cadastrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<String> cadastrarUsuario(@RequestBody UsuarioCadastroDto dto) {
         try {
-            usuarioService.cadastrarUsuario(usuario);
+            usuarioService.cadastrarUsuario(dto);
             return new ResponseEntity<>("Usuário cadastrado com sucesso!", HttpStatus.CREATED);
         } catch (Exception e) {
             // Em caso de erro, por exemplo, email duplicado

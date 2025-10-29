@@ -16,7 +16,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/cadastrar", "/api/auth/login").permitAll()
+                        .requestMatchers(
+                                "/api/auth/cadastrar",
+                                "/api/auth/login",
+                                "/api/cargos/**",
+                                "/api/usuarios/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

@@ -1,6 +1,8 @@
 package com.example.gestao_natacao.model.Usuario;
 
 import jakarta.persistence.*;
+import java.util.Set;
+
 
 @Entity
 @Table(name = "usuario")
@@ -18,6 +20,18 @@ public class Usuario {
 
     @Column(name = "senha_usuario", nullable = false, length = 255)
     private String senhaUsuario;
+
+    @ManyToMany(fetch = FetchType.EAGER) // Eager: Carrega os cargos junto com o usuário
+    @JoinTable(
+            name = "usuario_cargo", // Nome da tabela intermediária
+            joinColumns = @JoinColumn(name = "id_usuario"), // Chave de Usuario na tabela intermediária
+            inverseJoinColumns = @JoinColumn(name = "id_cargo") // Chave de Cargo na tabela intermediária
+    )
+    private Set<Cargo> cargos;
+
+    public Set<Cargo> getCargos() { return cargos; }
+
+    public void setCargos(Set<Cargo> cargos) { this.cargos = cargos; }
 
     // Construtor vazio (obrigatório para o JPA)
     public Usuario() {
@@ -55,4 +69,6 @@ public class Usuario {
     public void setSenhaUsuario(String senhaUsuario) {
         this.senhaUsuario = senhaUsuario;
     }
+
+
 }
