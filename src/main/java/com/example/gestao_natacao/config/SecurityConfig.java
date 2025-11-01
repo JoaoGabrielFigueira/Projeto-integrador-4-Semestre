@@ -20,7 +20,8 @@ public class SecurityConfig {
                                 "/api/auth/cadastrar",
                                 "/api/auth/login",
                                 "/api/cargos/**",
-                                "/api/usuarios/**").permitAll()
+                                "/api/usuarios/**",
+                                "/api/unidades/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
