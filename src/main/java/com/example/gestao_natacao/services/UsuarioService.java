@@ -64,14 +64,14 @@ public class UsuarioService {
     }
 
     // NOVO MÉTODO: Buscar usuário por ID (READ One)
-    public Usuario buscarPorId(Long id) {
+    public Usuario buscarPorId(Integer id) {
         // Usa o orElseThrow para retornar o objeto ou lançar uma exceção de não encontrado
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
     }
 
     // NOVO MÉTODO: Editar Usuário (UPDATE)
-    public Usuario editarUsuario(Long id, UsuarioCadastroDto dto) {
+    public Usuario editarUsuario(Integer id, UsuarioCadastroDto dto) {
         // 1. Garante que o usuário existe
         Usuario usuarioExistente = buscarPorId(id); // Reutiliza o método buscarPorId
 
@@ -94,7 +94,7 @@ public class UsuarioService {
     }
 
     // NOVO MÉTODO: Excluir Usuário (DELETE)
-    public void excluirUsuario(Long id) {
+    public void excluirUsuario(Integer id) {
         // Garante que o usuário exista (lança 404 se não existir)
         buscarPorId(id);
 

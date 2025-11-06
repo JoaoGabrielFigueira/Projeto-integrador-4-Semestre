@@ -47,7 +47,7 @@ public class UsuarioController {
     // 3. Endpoint para Buscar por ID (READ One)
     // GET /api/usuarios/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
         try {
             Usuario usuario = usuarioService.buscarPorId(id);
             return new ResponseEntity<>(usuario, HttpStatus.OK);
@@ -60,7 +60,7 @@ public class UsuarioController {
     // 4. Endpoint para Editar Usuário (UPDATE)
     // PUT /api/usuarios/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> editar(@PathVariable Long id, @RequestBody UsuarioCadastroDto dto) {
+    public ResponseEntity<Usuario> editar(@PathVariable Integer id, @RequestBody UsuarioCadastroDto dto) {
         try {
             Usuario usuarioEditado = usuarioService.editarUsuario(id, dto);
             return new ResponseEntity<>(usuarioEditado, HttpStatus.OK);
@@ -72,7 +72,7 @@ public class UsuarioController {
     // 5. Endpoint para Excluir Usuário (DELETE)
     // DELETE /api/usuarios/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> excluir(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> excluir(@PathVariable Integer id) {
         try {
             usuarioService.excluirUsuario(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Retorna 204 No Content

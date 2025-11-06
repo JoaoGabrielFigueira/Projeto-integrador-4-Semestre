@@ -21,7 +21,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/cargos/**",
                                 "/api/usuarios/**",
-                                "/api/unidades/**").permitAll()
+                                "/api/unidades/**",
+                                "/api/turmas/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
