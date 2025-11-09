@@ -13,13 +13,13 @@ public class Usuario {
     private Integer id;
 
     @Column(name = "nome_usuario", nullable = false, length = 32)
-    private String nomeUsuario;
+    private String nome;
 
     @Column(name = "email_usuario", nullable = false, unique = true, length = 32)
-    private String emailUsuario;
+    private String email;
 
     @Column(name = "senha_usuario", nullable = false, length = 255)
-    private String senhaUsuario;
+    private String senha;
 
     @ManyToMany(fetch = FetchType.EAGER) // Eager: Carrega os cargos junto com o usuário
     @JoinTable(
@@ -46,28 +46,28 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getNomeUsuario() {
-        return nomeUsuario;
+    public String getNome() {
+        return nome;
     }
 
-    public void setNomeUsuario(String nomeUsuario) {
-        this.nomeUsuario = nomeUsuario;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getEmailUsuario() {
-        return emailUsuario;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailUsuario(String emailUsuario) {
-        this.emailUsuario = emailUsuario;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getSenhaUsuario() {
-        return senhaUsuario;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setSenhaUsuario(String senhaUsuario) {
-        this.senhaUsuario = senhaUsuario;
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
 

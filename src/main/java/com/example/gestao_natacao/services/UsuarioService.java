@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -24,7 +25,20 @@ public class UsuarioService {
 
     // Método de Login (mantido)
     public boolean autenticarUsuario(String email, String senha) {
-        // ... Lógica de login (que já está funcionando)
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByEmail(email);
+
+        // 2. Verificar se o usuário existe
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+
+            // 3. Comparar a senha fornecida com a senha criptografada do banco (CRÍTICO)
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+            // Usa o matches() para comparar a senha em texto puro com o hash salvo no banco.
+            return encoder.matches(senha, usuario.getSenha());
+        }
+
+        // 4. Se o usuário não for encontrado
         return false;
     }
 
@@ -47,9 +61,9 @@ public class UsuarioService {
         Usuario novoUsuario = new Usuario();
 
         // CORREÇÃO DE NOMENCLATURA AQUI:
-        novoUsuario.setNomeUsuario(dto.getNome());      // Usa setNomeUsuario() da Entidade
-        novoUsuario.setEmailUsuario(dto.getEmail());    // Usa setEmailUsuario() da Entidade
-        novoUsuario.setSenhaUsuario(senhaCriptografada); // Usa setSenhaUsuario() da Entidade
+        novoUsuario.setNome(dto.getNome());      // Usa setNomeUsuario() da Entidade
+        novoUsuario.setEmail(dto.getEmail());    // Usa setEmailUsuario() da Entidade
+        novoUsuario.setSenha(senhaCriptografada); // Usa setSenhaUsuario() da Entidade
 
         // Atribuir o Set de Cargos
         novoUsuario.setCargos(new HashSet<>(cargosEncontrados));
@@ -81,12 +95,12 @@ public class UsuarioService {
         // 3. Verifica se a senha foi fornecida para criptografar
         if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            usuarioExistente.setSenhaUsuario(encoder.encode(dto.getSenha()));
+            usuarioExistente.setSenha(encoder.encode(dto.getSenha()));
         }
 
         // 4. Atualiza os campos
-        usuarioExistente.setNomeUsuario(dto.getNome());
-        usuarioExistente.setEmailUsuario(dto.getEmail());
+        usuarioExistente.setNome(dto.getNome());
+        usuarioExistente.setEmail(dto.getEmail());
         usuarioExistente.setCargos(new HashSet<>(cargosEncontrados));
 
         // 5. Salva (o JPA atualiza automaticamente)

@@ -2,6 +2,7 @@ package com.example.gestao_natacao.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,13 +17,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+
                         .requestMatchers(
                                 "/api/auth/cadastrar",
                                 "/api/auth/login",
                                 "/api/cargos/**",
                                 "/api/usuarios/**",
                                 "/api/unidades/**",
-                                "/api/turmas/**").permitAll()
+                                "/api/turmas/**",
+                                "/api/fases/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
