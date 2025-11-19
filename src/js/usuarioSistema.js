@@ -1,3 +1,5 @@
+import { UsuarioAPI, CargoAPI } from "./utils/api.js";
+
 // Variáveis globais
 let modal = document.getElementById('modalUsuario');
 let modalTitulo = document.getElementById('modalTitulo');
@@ -134,36 +136,35 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Submeter formulário
     if (formUsuario) {
-        formUsuario.addEventListener('submit', function (e) {
+        formUsuario.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
-            const nomeCompleto = document.getElementById('nomeCompleto').value;
-            const email = document.getElementById('email').value;
-            const nivelAcesso = document.getElementById('nivelAcesso').value;
+
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmarSenha').value;
-            
-            // Validar senhas
+
             if (senha !== confirmarSenha) {
                 alert('As senhas não coincidem!');
                 return;
             }
-            
+            const nivelAcesso = document.getElementById('nivelAcesso').value;
             const userData = {
-                nome: nomeCompleto,
-                email: email,
-                nivel: nivelAcesso
-            };
-            
+                nome: document.getElementById('nomeCompleto').value,
+                email: document.getElementById('email').value,
+                senha: senha,
+                idsCargos: [parseInt(nivelAcesso)]
+            }
+            ;
+                    
+            let result;
+
             if (isEditMode) {
-                console.log('Editando usuário:', userData);
-                alert('Usuário atualizado com sucesso!');
+                console.log('Atualizando usuário:', userData);
+                result = await UsuarioAPI.update(currentUserId, userData);
             } else {
-                console.log('Adicionando usuário:', userData);
-                alert('Usuário adicionado com sucesso!');
+                result = await UsuarioAPI.create(userData);
+                console.log('Criando usuário:', userData);
             }
             
-            // Fechar modal após salvar
             fecharModal();
         });
     }
@@ -184,22 +185,24 @@ let allUsuarios = [];
 
 async function fetchUsuarios(searchTerm = '') {
     try {
-        // TODO: substituir por chamada real ao backend Java
-        const mockUsuarios = [
-            { id: 1, nome: 'Maria Clara Alves de Almeida', email: 'maria@email.com', nivel: 'Administrador' },
-            { id: 2, nome: 'João Silva', email: 'joao@email.com', nivel: 'Professor' },
-            { id: 3, nome: 'Ana Pereira', email: 'ana@email.com', nivel: 'Secretaria' }
-        ];
+        const response = await UsuarioAPI.getAll();
 
-        if (searchTerm) {
-            return mockUsuarios.filter(u => u.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+        if (response.ok) {
+            let usuarios = response.data;
+            if (searchTerm) {
+                usuarios = usuarios.filter(u => u.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+            return usuarios;
+        }else {
+            console.error('Erro ao buscar usuários:', response.error);
+            return [];
         }
-        return mockUsuarios;
     } catch (err) {
         console.error('Erro ao buscar usuários:', err);
         return [];
     }
 }
+
 
 function renderUsuarios(usuarios) {
     const container = document.querySelector('.main-content');
@@ -234,13 +237,18 @@ function attachEventListenersUsuarios() {
 
     document.querySelectorAll('.table-actions .btn-delete').forEach(btn => {
         btn.removeEventListener('click', null);
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const id = parseInt(e.target.closest('.table-row').dataset.id);
             if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                // TODO: chamada real para backend
-                allUsuarios = allUsuarios.filter(u => u.id !== id);
-                renderUsuariosWithPagination(allUsuarios);
-                alert('Usuário excluído com sucesso!');
+
+                const result = await UsuarioAPI.remove(id);
+                if (result.ok) {
+                    alert('Usuário excluído com sucesso!');
+                    const usuarios = await fetchUsuarios();
+                    renderUsuariosWithPagination(usuarios);
+                }else {
+                    alert('Erro ao excluir usuário: ' + result.error);
+                }
             }
         });
     });

@@ -1,3 +1,5 @@
+import { UnidadeAPI } from "./utils/api.js";
+
 // Variáveis globais
 let modal = document.getElementById('modalUnidade');
 let modalTitulo = document.getElementById('modalTitulo');
@@ -24,9 +26,11 @@ function abrirModalEditar(unitData) {
     isEditMode = true;
     modalTitulo.textContent = 'Editar Unidade';
 
+    currentUnitId = unitData.id;
+
     // Preencher formulário com dados da unidade
-    document.getElementById('nomeUnidade').value = unitData.nome || '';
-    document.getElementById('cep').value = unitData.cep || '';
+    document.getElementById('nomeUnidade').value = unitData.nomeUnidade || '';
+    document.getElementById('cep').value = unitData.cepUnidade || '';
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -55,18 +59,19 @@ let allUnidades = [];
 
 async function fetchUnidades(searchTerm = '') {
     try {
-        // TODO: substituir por chamada real ao backend Java
-        const mockUnidades = [
-            { id: 1, nome: 'Unidade Portal', cep: '12000-000' },
-            { id: 2, nome: 'Unidade Selles', cep: '12111-111' },
-            { id: 3, nome: 'Unidade Centro', cep: '12222-222' }
-        ];
+        const response = await UnidadeAPI.getAll();
 
-        if (searchTerm) {
-            return mockUnidades.filter(u => u.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+        if(response.ok) {
+            let unidades = response.data;
+
+            if (searchTerm) {
+                return unidades.filter(u => u.nomeUnidade.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+            return unidades;
+        }else {
+            console.error('Erro ao buscar unidades:', response.error);
+            return [];
         }
-
-        return mockUnidades;
     } catch (err) {
         console.error('Erro ao buscar unidades:', err);
         return [];
@@ -78,7 +83,7 @@ function renderUnidades(unidades) {
     const html = unidades.map(u => `
         <div class="table-row" data-id="${u.id}">
             <div class="table-data">
-                <p class="table-row-title">${u.nome}</p>
+                <p class="table-row-title">${u.nomeUnidade}</p>
             </div>
             <div class="table-actions">
                 <button class="btn-edit" data-user='${JSON.stringify(u)}'>Editar</button>
@@ -112,11 +117,19 @@ function attachEventListenersUnidades() {
         btn.removeEventListener('click', null);
         btn.addEventListener('click', async (e) => {
             const id = parseInt(e.target.closest('.table-row').dataset.id);
+            console.log("ID enviado para delete:", id);
             if (confirm('Tem certeza que deseja excluir esta unidade?')) {
-                // TODO: chamada real para backend
-                allUnidades = allUnidades.filter(u => u.id !== id);
-                renderUnidadesWithPagination(allUnidades);
-                alert('Unidade excluída com sucesso!');
+
+                
+                const result = await UnidadeAPI.remove(id);
+
+                if (result.ok) {
+                    alert('Unidade excluída com sucesso!');
+                    const unidadesAtualizadas = await fetchUnidades();
+                    renderUnidadesWithPagination(unidadesAtualizadas);
+                }else {
+                    alert(`Erro ao excluir unidade: ${result.error}`);
+                }
             }
         });
     });
@@ -190,20 +203,46 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Submeter formulário
     if (formUnidade) {
-        formUnidade.addEventListener('submit', function (e) {
+        formUnidade.addEventListener('submit', async function (e) {
             e.preventDefault();
             
             const nomeUnidade = document.getElementById('nomeUnidade').value;
             const cep = document.getElementById('cep').value;
-            
-            // Aqui você pode adicionar a lógica para salvar os dados
-            console.log('Salvando unidade:', { nome: nomeUnidade, cep: cep });
-            
-            // Fechar modal após salvar
-            fecharModal();
-            
-            // Aqui você pode adicionar feedback visual ou atualizar a lista
-            alert('Unidade salva com sucesso!');
+            const numeroUnidade = document.getElementById('numeroUnidade').value;
+            const telefoneUnidade = document.getElementById('telefoneUnidade').value;
+
+            const unitData = {
+                nomeUnidade: nomeUnidade,
+                cepUnidade: cep,
+                numeroUnidade: numeroUnidade,
+                telefoneUnidade: telefoneUnidade
+            };
+
+            let result;
+            const submitButton = formUnidade.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+
+            try {
+                if (isEditMode) {
+                    result = await UnidadeAPI.update(currentUnitId, unitData);
+                } else {
+                    result = await UnidadeAPI.create(unitData);
+                }
+
+                if (result.ok) {
+                    alert(`Unidade ${isEditMode ? 'atualizada' : 'adicionada'} com sucesso!`);
+                    const unidadesAtualizadas = await fetchUnidades();
+                    renderUnidadesWithPagination(unidadesAtualizadas);
+                } else {
+                    alert(`Erro ao salvar unidade: ${result.error}`);
+                }
+            } catch (err) {
+                console.error('Erro ao salvar unidade:', err);
+                alert(`Erro ao salvar unidade. Verifique os dados e a conexão.`);
+            } finally {
+                submitButton.disabled = false;
+                fecharModal();
+            }
         });
     }
 });

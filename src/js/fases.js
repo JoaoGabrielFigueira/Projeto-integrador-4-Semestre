@@ -1,3 +1,5 @@
+import { FaseAPI } from "./utils/api.js";
+
 // Variáveis globais
 let modal = document.getElementById('modalFase');
 let modalTitulo = document.getElementById('modalTitulo');
@@ -27,7 +29,7 @@ function abrirModalEditar(faseData) {
     currentFaseId = faseData.id;
 
     // Preencher formulário com dados da fase
-    document.getElementById('nomeFase').value = faseData.nome || '';
+    document.getElementById('nomeFase').value = faseData.nomeFase || '';
     
     // Aqui você pode adicionar lógica para preencher outras áreas do formulário
     // como atividades da fase, imagem, etc.
@@ -70,25 +72,23 @@ let allFases = [];
 
 async function fetchFases(searchTerm = '') {
     try {
-        // TODO: substituir pela chamada real ao backend Java
-        const mockFases = [
-            { id: 1, nome: 'Golfinho Baby' },
-            { id: 2, nome: 'Golfinho Infantil' },
-            { id: 3, nome: 'Foca Iniciante' },
-            { id: 4, nome: 'Estrela do Mar' },
-            { id: 5, nome: 'Peixe Dourado' },
-            { id: 6, nome: 'Marinheiro' }
-        ];
+        const response = await FaseAPI.getAll();
 
-        if (searchTerm) {
-            return mockFases.filter(f => f.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+        if (response.ok) {
+            let fases = response.data;
+
+            if (searchTerm) {
+                return fases.filter(f => f.nomeFase.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+            return fases;
+        }else {
+           console.error('Erro ao buscar fases:', response.error);
+           return [];
         }
-
-        return mockFases;
-    } catch (err) {
-        console.error('Erro ao buscar fases:', err);
-        return [];
-    }
+    }catch (err) {
+            console.error('Erro ao buscar fases:', err);
+            return [];
+        }
 }
 
 function renderFases(fases) {
@@ -96,7 +96,7 @@ function renderFases(fases) {
     const fasesHTML = fases.map(fase => `
         <div class="table-row" data-id="${fase.id}">
             <div class="table-data">
-                <p class="table-row-title">${fase.nome}</p>
+                <p class="table-row-title">${fase.nomeFase}</p>
             </div>
             <div class="table-actions">
                 <button class="btn-edit" data-user='${JSON.stringify(fase)}'>Editar</button>
@@ -124,9 +124,9 @@ function attachEventListenersFases() {
             if (this.getAttribute('data-user')) {
                 try { faseData = JSON.parse(this.getAttribute('data-user')); } catch (e) { }
             }
-            if (!faseData.nome) {
+            if (!faseData.nomeFase) {
                 const tableRow = this.closest('.table-row');
-                faseData = { id: parseInt(tableRow.dataset.id), nome: tableRow.querySelector('.table-row-title').textContent };
+                faseData = { id: parseInt(tableRow.dataset.id), nomeFase: tableRow.querySelector('.table-row-title').textContent };
             }
             abrirModalEditar(faseData);
         });
@@ -134,14 +134,18 @@ function attachEventListenersFases() {
 
     document.querySelectorAll('.table-actions .btn-delete').forEach(btn => {
         btn.removeEventListener('click', null);
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const id = parseInt(e.target.closest('.table-row').dataset.id);
-            // TODO: chamar API para excluir a fase
             if (confirm('Tem certeza que deseja excluir esta fase?')) {
-                // Simula exclusão local
-                allFases = allFases.filter(f => f.id !== id);
-                renderFasesWithPagination(allFases);
-                alert('Fase excluída com sucesso!');
+
+                const result = await FaseAPI.remove(id);
+                if (result.ok) {
+                    alert('Fase excluída com sucesso!');
+                    const fasesAtualizadas = await fetchFases();    
+                    renderFasesWithPagination(fasesAtualizadas);
+                }else {
+                    alert(`Erro ao excluir fase: ${result.error}`);
+                }
             }
         });
     });
@@ -225,14 +229,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
             
             // Se não houver data-user, usar dados de exemplo
-            if (!faseData.nome) {
+            if (!faseData.nomeFase) {
                 // Pegar o nome da fase da linha da tabela
                 const tableRow = btn.closest('.table-row');
                 const faseName = tableRow.querySelector('.table-row-title').textContent;
                 
                 faseData = {
                     id: 1,
-                    nome: faseName,
+                    nomeFase: faseName,
                     atividades: [] // Adicione outras propriedades conforme necessário
                 };
             }
@@ -294,42 +298,64 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Submeter formulário
     if (formFase) {
-        formFase.addEventListener('submit', function (e) {
+        formFase.addEventListener('submit', async function (e) {
             e.preventDefault();
             
             const nomeFase = document.getElementById('nomeFase').value;
             
-            // Coletar atividades
+            const minIdade = document.getElementById('minIdade').value.trim() !== '' 
+                            ? parseInt(document.getElementById('minIdade').value)
+                            : null;
+                            
+            const maxIdade = document.getElementById('maxIdade').value.trim() !== '' 
+                            ? parseInt(document.getElementById('maxIdade').value)
+                            : null;
+
             const activityInputs = document.querySelectorAll('.activity-input');
             const atividades = [];
             activityInputs.forEach(input => {
                 if (input.value.trim() !== '') {
-                    atividades.push(input.value.trim());
+                    const idAtividade = input.getAttribute('data-id');
+                    atividades.push({
+                        id: idAtividade ? parseInt(idAtividade) : null,
+                        descricao: input.value.trim(),
+                    });
                 }
             });
             
             const faseData = {
-                nome: nomeFase,
+                nomeFase: nomeFase,
+                minIdade: minIdade,
+                maxIdade: maxIdade,
                 atividades: atividades,
-                imagem: imagemMascote.files[0] ? imagemMascote.files[0].name : null
             };
-            
-            if (isEditMode) {
-                faseData.id = currentFaseId;
-                console.log('Editando fase:', faseData);
-                // Aqui você pode adicionar a lógica para atualizar os dados
-                alert('Fase atualizada com sucesso!');
-            } else {
-                console.log('Adicionando fase:', faseData);
-                // Aqui você pode adicionar a lógica para salvar os dados
-                alert('Fase adicionada com sucesso!');
+
+            let result;
+            const submitButton = formFase.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+
+            try {
+                if (isEditMode) {
+                    console.log("TOKEN SENDO ENVIADO NO UPDATE:", localStorage.getItem("authToken"));
+                    result = await FaseAPI.update(currentFaseId, faseData);
+                } else {
+                    result = await FaseAPI.create(faseData);
+                }
+
+                if (result.ok) {
+                    alert(`Fase ${isEditMode ? 'atualizada' : 'criada'} com sucesso!`);
+                    const fasesAtualizadas = await fetchFases();
+                    renderFasesWithPagination(fasesAtualizadas);
+                }else {
+                    alert(`Erro ao salvar fase: ${result.error}`);
+                }
+            } catch (err) {
+                console.error('Erro ao salvar fase:', err);
+                alert('Erro ao salvar fase. Por favor, tente novamente.');
+            }finally {
+                submitButton.disabled = false;
+                fecharModal();              
             }
-            
-            // Fechar modal após salvar
-            fecharModal();
-            
-            // Aqui você pode adicionar feedback visual ou atualizar a lista
-            // Por exemplo, adicionar a nova fase à lista ou recarregar os dados
         });
     }
 });

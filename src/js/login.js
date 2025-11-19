@@ -1,3 +1,4 @@
+import { AuthAPI } from "./utils/api.js";
 // Função para validação básica do formato do email
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,32 +21,18 @@ function validateLoginFields(email, password) {
 // Tentativa de login (mock). Substituir por chamada ao backend Java quando pronto.
 async function attemptLogin(email, password) {
     try {
-        const mockResponse = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (email === 'admin@teste.com' && password === '123456') {
-                    resolve({
-                        success: true,
-                        user: {
-                            name: 'Administrador',
-                            role: 'ADMIN'
-                        }
-                    });
-                } else {
-                    reject(new Error('Credenciais inválidas'));
-                }
-            }, 400);
-        });
+        const result = await AuthAPI.login(email, password);
 
-        const result = await mockResponse;
-        if (result && result.success) {
-            sessionStorage.setItem('userName', result.user.name);
-            sessionStorage.setItem('userRole', result.user.role);
+        if (result.ok) {
+            localStorage.setItem('authToken', result.data.token || 'mock-token');
+            sessionStorage.setItem('userName', 'Administrador');
+            sessionStorage.setItem('userRole', 'ADMIN');
             return { success: true };
+        }else {
+            return { success: false, message: result.error || 'Email ou senha incorretos.' };
         }
-
-        return { success: false, message: 'Erro desconhecido.' };
     } catch (err) {
-        return { success: false, message: err.message || 'Email ou senha incorretos.' };
+        return { success: false, message: err.message || 'Falha na conexao com o servidor de autenticação.' };
     }
 }
 

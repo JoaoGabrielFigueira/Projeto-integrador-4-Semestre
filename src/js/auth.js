@@ -36,3 +36,5 @@ function initNavigation() {
 }
 
 document.addEventListener('DOMContentLoaded', initNavigation);
+
+// --- IGNORE ---

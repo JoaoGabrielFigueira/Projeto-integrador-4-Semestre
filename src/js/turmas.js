@@ -1,65 +1,140 @@
-// Variáveis globais
-let modal = document.getElementById('modalTurmas');
-let modalTitulo = document.getElementById('modalTitulo');
-let formTurmas = document.getElementById('formTurmas');
+import { TurmaAPI, UnidadeAPI, UsuarioAPI } from "./utils/api.js"; 
+
+// ====================================================================
+// VARIÁVEIS GLOBAIS
+// ====================================================================
+let modal = null;
+let modalTitulo = null;
+let formTurmas = null;
 let isEditMode = false;
 let currentTurmaId = null;
 
-// Função de integração com backend (simulação)
-async function fetchTurmas(searchTerm = '') {
-    try {
-        // TODO: Substituir por chamada real à API Java
-        // Exemplo de implementação futura:
-        /*
-        const response = await fetch('/api/turmas', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${sessionStorage.getItem('userToken')}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-        return data;
-        */
+// Configurações de paginação
+const ITEMS_PER_PAGE = 5;
+let currentPage = 1;
+let allTurmas = [];
 
-        const mockTurmas = [
-            {
-                id: 1,
-                nome: '2ª e 4ª | 9h30 - 7 a 12',
-                unidade: 'Unidade Selles',
-                professores: ['Professor 1', 'Professor 2']
-            },
-            {
-                id: 2,
-                nome: '3ª e 5ª | 14h00 - 10 a 15',
-                unidade: 'Unidade Centro',        
-                professores: ['Professor 2', 'Professor 3']
-            }
-        ];
+// ====================================================================
+// FUNÇÕES DE UI E EVENTOS (Definidas Primeiro para Resolver ReferenceError)
+// ====================================================================
 
-        // Simula Filtros de Busca
-        if (searchTerm) {
-            return mockTurmas.filter(turma =>
-                turma.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                turma.unidade.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
+/**
+ * Fecha o modal.
+ */
+function fecharModal() {
+    const modalInstance = document.getElementById('modalTurmas');
+    if (!modalInstance) return;
 
-        return mockTurmas;
-    } catch (error) {
-        console.error('Erro ao buscar turmas:', error);
-        throw new Error('Erro ao carregar as turmas');
-    }
+    const modalContent = modalInstance.querySelector('.modal-content');
+    modalContent.classList.add('close');
+    
+    setTimeout(() => {
+        modalInstance.classList.remove('show');
+        modalContent.classList.remove('close');
+        document.body.style.overflow = 'auto';
+        if (formTurmas) formTurmas.reset();
+        isEditMode = false;
+        currentTurmaId = null;
+    }, 300);
 }
 
-// Função para atualizar a lista de turmas na Interface
-function atualizarListasTurmas(turmas) {
+/**
+ * Abre o modal para adicionar uma nova turma.
+ */
+function abrirModalAdicionar() {
+    isEditMode = false;
+    modalTitulo.textContent = 'Adicionar Turma';
+    formTurmas.reset();
+    currentTurmaId = null;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Abre o modal para editar uma turma.
+ */
+function abrirModalEditar(turmaData) {
+    isEditMode = true;
+    modalTitulo.textContent = 'Editar Turma';
+    currentTurmaId = turmaData.id;
+
+    // CRÍTICO: Preencher formulário com dados do backend
+    document.getElementById('turma').value = turmaData.nomeTurma || '';
+    
+    if (turmaData.unidade) {
+        // Assume que o select de unidade está preenchido pelo carregarDadosRelacionados
+        document.getElementById('unidade').value = turmaData.unidade.id;
+    }
+    if (turmaData.professorResponsavel) {
+        // Preenche o radio button
+        const professorRadio = document.querySelector(`input[name="professorId"][value="${turmaData.professorResponsavel.id}"]`);
+        if(professorRadio) professorRadio.checked = true;
+    }
+    
+    // CRÍTICO: Preencher a Hora da Aula (LocalTime HH:mm:ss -> HH:mm)
+    const hora = turmaData.horaAula ? turmaData.horaAula.substring(0, 5) : '';
+    document.getElementById('horaAula').value = hora;
+
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Anexa os event listeners aos botões de Editar e Excluir.
+ */
+function attachEventListeners() {
+    // Listener para o botão Editar
+    document.querySelectorAll('.table-actions .btn-edit').forEach(btn => {
+        btn.removeEventListener('click', null); 
+        btn.addEventListener('click', async function () {
+            const row = this.closest('.table-row');
+            const turmaId = parseInt(row.dataset.id);
+            
+            if (isNaN(turmaId) || !row.dataset.id) {
+                console.error('ID da turma inválido para edição. data-id lido:', row.dataset.id);
+                alert("Erro: ID da turma não encontrado ou inválido para edição.");
+                return;
+            }
+            
+            // Requisita os dados completos para edição
+            const response = await TurmaAPI.getById(turmaId); 
+            
+            if (response.ok) {
+                abrirModalEditar(response.data); 
+            } else {
+                // O 401 Unauthorized (sem token) ou 404/Erro do servidor (sem recurso) cairá aqui
+                alert(`Erro ao buscar dados da turma (Status: ${response.status}). Verifique seu token de autenticação (401).`);
+            }
+        });
+    });
+
+    // Listener para o botão Excluir
+    document.querySelectorAll('.table-actions .btn-delete').forEach(btn => {
+        btn.removeEventListener('click', null); 
+        btn.addEventListener('click', function () {
+            const row = this.closest('.table-row');
+            const turmaId = parseInt(row.dataset.id);
+            if (!isNaN(turmaId)) {
+                excluirTurma(turmaId);
+            } else {
+                 console.error('ID da turma inválido para exclusão. data-id lido:', row.dataset.id);
+            }
+        });
+    });
+}
+
+
+/**
+ * Renderiza a lista de turmas no DOM.
+ */
+function renderTurmas(turmas) {
+    console.log('Renderizando turmas:', turmas); // Log para depuração
     const container = document.querySelector('.main-content');
     const turmasHTML = turmas.map(turma => `
         <div class="table-row" data-id="${turma.id}">
             <div class="table-data">
-                <p class="table-row-title">${turma.nome}</p>
-                <p class="table-badge">${turma.unidade}</p>
+                <p class="table-row-title">${turma.nomeTurma || 'Turma Sem Nome'}</p>
+                <p class="table-badge">${turma.unidade ? turma.unidade.nomeUnidade : 'N/A'}</p>
             </div>
             <div class="table-actions">
                 <button class="btn-edit">Editar</button>
@@ -68,245 +143,199 @@ function atualizarListasTurmas(turmas) {
         </div>
     `).join('');
 
-    const tableContent = container.querySelector('.table-content');
-    if (tableContent) {
-        tableContent.innerHTML = turmasHTML;
-    } else {
-        container.querySelector('.page-header').insertAdjacentHTML('afterend',
-            `<div class="table-content">${turmasHTML}</div>`);
+    // Garante que o container de turmas existe e atualiza o conteúdo
+    let tableContent = document.getElementById('turmasContainer');
+    if (!tableContent) {
+        tableContent = document.createElement('div');
+        tableContent.id = 'turmasContainer';
+        tableContent.className = 'table-content';
+        container.querySelector('.page-header').insertAdjacentElement('afterend', tableContent);
     }
+    tableContent.innerHTML = turmasHTML;
 
-    // Reattach event Listeners
-    attachEventListeners();
+    // CRÍTICO: Anexar listeners APÓS a renderização
+    attachEventListeners(); 
 }
 
-//Função para excluir turma
-async function  excluirTurma(turmaId) {
-    if(confirm('Tem certeza que deseja excluir esta turma?')) {
-        try {
-            //TODO: Implementar chamada real à API JAVA
-            console.log(`Excluindo Turma ${turmaId}`);
-
-            //Simulação de exclusão bem sucedida
-            const turmas = await fetchTurmas();
-            const turmasAtualizadas = turmas.filter(turma => turma.id !== turmaId);
-            updateTurmasList(turmasAtualizadas);
-
-            alert('Turma excluída com sucesso!');
-        } catch (error) {
-            alert('Erro ao excluir turma.');
-            console.error('Erro:', error);
-        }
-    }
-}
-
-// Função para salvar turma(adicionar/editar)
-async function salvarTurma(turmaData) {
-    try {
-        //TODO: Implementar chamada real à API JAVA
-        console.log('Salvando Turma:', turmaData);
-
-        // Simula salvamento bem-sucedido
-        const turmas = await fetchTurmas();
-        if(turmaData.id) {
-            //Atualização
-            const index = turmas.findIndex(t => t.id === turmaData.id);
-            if(index !== -1) {
-                turmas[index] = {...turmas[index], ...turmaData};
-            }
-        } else {
-            //Nova Turma
-            turmaData.id = turmas.length + 1;
-            turmas.push(turmaData);
-        }
-
-        updateTurmasList(turmas);
-        return true;
-    } catch (error) {
-        console.error('Erro ao salvar turma:', error);
-        return false;
-    }
-}
-
-// Função para anexar event Listeners aos eleemntos dinâmicos
-function attachEventListeners() {
-    const editBtns = document.querySelectorAll('.table-actions .btn-edit');
-    const deleteBtns = document.querySelectorAll('.table-actions .btn-delete');
-
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const turmaId = this.closest('.table-row').dataset.id;
-            const tumaData = {
-                id: parseInt(turmaId),
-                nome: this.closest('.table-row').querySelector('.table-row-title').textContent,
-                unidade: this.closest('.table-row').querySelector('.table-badge').textContent,
-                professores: ['Professor 1', 'Professor 2'] // TODO:  Buscar dados reais
-            };
-            abrirModalEditar(turmaData);
-    });
-    });
-    deleteBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const turmaId = parseInt(this.closest('.table-row').dataset.id);
-            excluirTurma(turmaId);
-        });
-    });
-}
-
-// Elementos do modal
-const cancelBtn = document.querySelector('.btn-cancel');
-const addBtn = document.getElementById('btnAdicionar');
-const editBtns = document.querySelectorAll('.table-actions .btn-edit');
-const deleteBtns = document.querySelectorAll('.table-actions .btn-delete');
-
-// Abrir modal para adicionar turma
-function abrirModalAdicionar() {
-    isEditMode = false;
-    modalTitulo.textContent = 'Adicionar Turma';
-    formTurmas.reset();
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-}
-
-// Abrir modal para editar turma
-function abrirModalEditar(turmaData) {
-    isEditMode = true;
-    modalTitulo.textContent = 'Editar Turma';
-    currentTurmaId = turmaData.id;
-
-    // Preencher formulário com dados da turma
-    document.getElementById('turma').value = turmaData.nome || '';
-    document.getElementById('unidade').value = turmaData.unidade || '';
-    
-    // Desmarcar todos os checkboxes primeiro
-    document.getElementById('professor1').checked = false;
-    document.getElementById('professor2').checked = false;
-    document.getElementById('professor3').checked = false;
-    
-    // Se professor for um array, marcar todos os selecionados
-    if (Array.isArray(turmaData.professores)) {
-        turmaData.professores.forEach(prof => {
-            if (prof === 'Professor 1') document.getElementById('professor1').checked = true;
-            if (prof === 'Professor 2') document.getElementById('professor2').checked = true;
-            if (prof === 'Professor 3') document.getElementById('professor3').checked = true;
-        });
-    } else if (turmaData.professor) {
-        // Se for string única, marcar apenas esse
-        if (turmaData.professor === 'Professor 1') document.getElementById('professor1').checked = true;
-        if (turmaData.professor === 'Professor 2') document.getElementById('professor2').checked = true;
-        if (turmaData.professor === 'Professor 3') document.getElementById('professor3').checked = true;
-    }
-
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-}
-
-// Fechar modal
-function fecharModal() {
-    const modalContent = modal.querySelector('.modal-content');
-    
-    // Adicionar classe de animação de fechamento
-    modalContent.classList.add('close');
-    
-    // Aguardar a animação terminar (300ms) antes de esconder o modal
-    setTimeout(() => {
-        modal.classList.remove('show');
-        modalContent.classList.remove('close');
-        document.body.style.overflow = 'auto';
-        formTurmas.reset();
-        isEditMode = false;
-        currentTurmaId = null;
-    }, 300);
-}
-
-// Event listeners
-// Configurações de paginação
-const ITEMS_PER_PAGE = 5;
-let currentPage = 1;
-let allTurmas = [];
-
-// Função para renderizar turmas com paginação
+/**
+ * Renderiza turmas aplicando paginação.
+ */
 async function renderTurmasWithPagination(turmas) {
     allTurmas = turmas;
+    
+    // As funções de paginação (createPagination, paginateItems, renderPaginationControls)
+    // são globais se o pagination.js for carregado corretamente no HTML.
+    if (typeof createPagination === 'undefined') {
+        renderTurmas(turmas);
+        return;
+    }
+
     const paginationData = createPagination(turmas.length, ITEMS_PER_PAGE, currentPage);
     const paginatedTurmas = paginateItems(turmas, ITEMS_PER_PAGE, currentPage);
     
-    // Renderiza as turmas da página atual
-    atualizarListasTurmas(paginatedTurmas);
+    renderTurmas(paginatedTurmas);
     
-    // Renderiza os controles de paginação
     renderPaginationControls(paginationData, 'paginationContainer', (page) => {
         currentPage = page;
         renderTurmasWithPagination(allTurmas);
     });
 }
 
-document.addEventListener('DOMContentLoaded', async function () {
-    // Carregar turmas iniciais
+
+// ====================================================================
+// FUNÇÕES DE SERVIÇO (CRUD e Fetch)
+// ====================================================================
+
+/**
+ * Busca todas as turmas da API, aplicando filtro local se necessário.
+ */
+async function fetchTurmas(searchTerm = '') {
     try {
-        const turmas = await fetchTurmas();
-        renderTurmasWithPagination(turmas);
-    } catch (error) {
-        alert('Erro ao carregar as turmas.');
-    }
-
-    // Adicionar evento de busca
-    const searchInput = document.getElementById('pesquisaTurmas');
-    if (searchInput) {
-        let timeoutId;
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(async () => {
-                try {
-                    const turmas = await fetchTurmas(e.target.value);
-                    atualizarListasTurmas(turmas);
-                } catch (error) {
-                    console.error('Erro na busca:', error);
-                }
-            }, 300); // Debounce de 300ms para evitar muitas requisições
-        });
-    }
-    // Botão adicionar novo
-    if (addBtn) {
-        addBtn.addEventListener('click', abrirModalAdicionar);
-    }
-
-    // Botões editar
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            // Dados de exemplo - em produção, isso viria do backend ou do elemento pai
-            const turmaData = {
-                id: 1,
-                nome: '2ª e 4ª | 9h30 - 7 a 12',
-                unidade: 'Unidade Selles',
-                professores: ['Professor 1', 'Professor 2']
-            };
-            abrirModalEditar(turmaData);
-        });
-    });
-
-    // Botões excluir
-    deleteBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            excluirTurma();
-        });
-    });
-
-    // Fechar modal com botão Cancelar
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', fecharModal);
-    }
-
-    // Fechar modal clicando fora dele
-    if (modal) {
-        window.addEventListener('click', function (event) {
-            if (event.target === modal) {
-                fecharModal();
+        const response = await TurmaAPI.getAll();
+        if (!response.ok) {
+            console.error('Erro ao buscar turmas:', response.error);
+            // Alerta de erro de conexão (visto em image_6224e3.png)
+            if (searchTerm === '') {
+                alert('Erro ao carregar as turmas. Verifique o backend e o console.');
             }
+            return [];
+        }
+        
+        let turmas = response.data;
+        
+        if (searchTerm) {
+            return turmas.filter(t => 
+                t.nomeTurma && t.nomeTurma.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (t.unidade && t.unidade.nomeUnidade && t.unidade.nomeUnidade.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+        }
+        return turmas;
+        
+    } catch (error) {
+        console.error('Erro de rede ao buscar turmas:', error);
+        return [];
+    }
+}
+
+/**
+ * Salva (POST) ou atualiza (PUT) uma turma.
+ */
+async function salvarTurma(turmaData, isEdit) {
+    try {
+        let result;
+        if (isEdit) {
+            // No PUT, o ID deve ser enviado no payload
+            turmaData.id = currentTurmaId; 
+            result = await TurmaAPI.update(turmaData.id, turmaData);
+        } else {
+            result = await TurmaAPI.create(turmaData);
+        }
+
+        if (!result.ok) {
+            console.error("Erro detalhado da API (400 Bad Request):", result.error);
+            // A API retorna 400 se o JSON estiver inválido ou houver falha de validação no Java
+            alert(`Erro do servidor (Status: ${result.status}). Verifique se o formato de hora (HH:mm:ss) ou IDs estão corretos.`);
+        }
+        return result.ok;
+    } catch (error) {
+        console.error('Erro ao salvar turma:', error);
+        return false;
+    }
+}
+
+async function excluirTurma(turmaId) {
+    // ... (Lógica de exclusão mantida)
+    if(confirm('Tem certeza que deseja excluir esta turma?')) {
+        try {
+            const result = await TurmaAPI.remove(turmaId);
+            
+            if(result.ok) {
+                alert('Turma excluída com sucesso!');
+                const turmasAtualizadas = await fetchTurmas();
+                renderTurmasWithPagination(turmasAtualizadas);
+            } else {
+                alert(`Erro ao excluir turma (Status: ${result.status}). Verifique seu token.`);
+            }
+        } catch (error) {
+            alert('Erro ao excluir turma.');
+        }
+    }
+}
+
+/**
+ * Carrega unidades e professores (usuários) para o modal.
+ */
+async function carregarDadosRelacionados() {
+    const selectUnidade = document.getElementById('unidade');
+    const containerProfessores = document.getElementById('professoresContainer');
+    
+    // 1. CARREGAR UNIDADES
+    // ... (Lógica para carregar unidades mantida) ...
+    selectUnidade.innerHTML = '<option value="">Selecione a unidade</option>';
+    const unidadesResult = await UnidadeAPI.getAll();
+
+    if (unidadesResult.ok) {
+        unidadesResult.data.forEach(unidade => {
+            selectUnidade.insertAdjacentHTML('beforeend', 
+                `<option value="${unidade.id}">${unidade.nomeUnidade}</option>`);
         });
     }
 
-    // Submeter formulário
+    // 2. CARREGAR PROFESSORES (USUÁRIOS)
+    if (containerProfessores) {
+        containerProfessores.innerHTML = '<p>Selecione o professor responsável (Um por turma):</p>';
+        const professoresResult = await UsuarioAPI.getAll(); 
+
+        if (professoresResult.ok) {
+            const professores = professoresResult.data.filter(u => 
+                u.cargos && u.cargos.some(c => c.nomeCargo === 'Professor')
+            );
+            
+            professores.forEach(prof => {
+                // CORREÇÃO CRÍTICA: Usa 'nome' (resolve 'undefined' no professor)
+                const nome = prof.nome; 
+                const id = prof.id;
+                containerProfessores.insertAdjacentHTML('beforeend', `
+                    <div class="option-item">
+                        <input type="radio" id="prof-${id}" name="professorId" value="${id}">
+                        <label for="prof-${id}">${nome}</label>
+                    </div>
+                `);
+            });
+        }
+    }
+}
+
+// ====================================================================
+// INICIALIZAÇÃO (DOMContentLoaded) - DEVE SER O ÚLTIMO BLOCO
+// ====================================================================
+
+document.addEventListener('DOMContentLoaded', async function () {
+    // 1. OBTENÇÃO DE REFERÊNCIAS APÓS O DOM CARREGAR
+    modal = document.getElementById('modalTurmas');
+    modalTitulo = document.getElementById('modalTitulo');
+    formTurmas = document.getElementById('formTurmas');
+    
+    // 2. CARREGAR DADOS DINÂMICOS
+    await carregarDadosRelacionados(); 
+    
+    // 3. CARREGAR TURMAS INICIAIS
+    const turmas = await fetchTurmas(); 
+    await renderTurmasWithPagination(turmas);
+    
+    // 4. ANEXAR EVENTOS GLOBAIS
+    const addButton = document.getElementById('btnAdicionar');
+    if (addButton) {
+        // Agora abrirModalAdicionar está definido!
+        addButton.addEventListener('click', abrirModalAdicionar); 
+    }
+    
+    const cancelButton = modal ? modal.querySelector('.btn-cancel') : null;
+    if (cancelButton) {
+        cancelButton.addEventListener('click', fecharModal);
+    }
+    
+    // 5. LÓGICA DE SUBMISSÃO
     if (formTurmas) {
         formTurmas.addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -316,53 +345,43 @@ document.addEventListener('DOMContentLoaded', async function () {
             
             try {
                 const turmaNome = document.getElementById('turma').value;
-                const unidade = document.getElementById('unidade').value;
-                
-                // Obter professores selecionados (pode ser múltiplos)
-                const professoresSelecionados = [];
-                if (document.getElementById('professor1').checked) {
-                    professoresSelecionados.push('Professor 1');
-                }
-                if (document.getElementById('professor2').checked) {
-                    professoresSelecionados.push('Professor 2');
-                }
-                if (document.getElementById('professor3').checked) {
-                    professoresSelecionados.push('Professor 3');
-                }
-                
-                // Validar se pelo menos um professor foi selecionado
-                if (professoresSelecionados.length === 0) {
-                    alert('Por favor, selecione pelo menos um professor responsável.');
+                const unidadeId = document.getElementById('unidade').value; 
+                // CRÍTICO: Adiciona ":00" para garantir o formato HH:mm:ss que a API Java espera para LocalTime
+                const horaAula = document.getElementById('horaAula').value + ":00"; 
+                const professorSelecionado = document.querySelector('input[name="professorId"]:checked');
+                const professorId = professorSelecionado ? professorSelecionado.value : null;
+
+                if (!professorId || unidadeId === "" || !turmaNome || !horaAula) {
+                    alert('Por favor, preencha todos os campos obrigatórios (Nome, Unidade, Horário e Professor).');
                     submitButton.disabled = false;
                     return;
                 }
                 
-                const turmaData = {
-                    nome: turmaNome,
-                    unidade: unidade,
-                    professores: professoresSelecionados
+                const turmaDataDTO = {
+                    nomeTurma: turmaNome, 
+                    horaAula: horaAula,
+                    idUnidade: parseInt(unidadeId),
+                    idProfessorResponsavel: parseInt(professorId)
                 };
                 
-                if (isEditMode) {
-                    turmaData.id = currentTurmaId;
-                }
-                
-                const resultado = await salvarTurma(turmaData);
-                if (resultado) {
+                // Salva ou atualiza
+                const resultadoAPI = await salvarTurma(turmaDataDTO, isEditMode);
+
+                if (resultadoAPI) {
                     alert(isEditMode ? 'Turma atualizada com sucesso!' : 'Turma adicionada com sucesso!');
                     const turmasAtualizadas = await fetchTurmas();
-                    atualizarListasTurmas(turmasAtualizadas);
+                    renderTurmasWithPagination(turmasAtualizadas);
                     fecharModal();
                 } else {
-                    alert('Erro ao salvar turma');
+                    alert('Erro ao salvar turma. Verifique o console para detalhes da API.');
                 }
+                
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao salvar turma');
+                console.error('Erro no processamento do formulário:', error);
+                alert('Erro fatal ao processar o formulário. Verifique o console.');
             } finally {
                 submitButton.disabled = false;
             }
         });
     }
 });
-
