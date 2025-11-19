@@ -1,0 +1,758 @@
+/* Import dos estilos de paginação */
+@import url('pagination.css');
+
+/* ============================================
+   CSS GLOBAL - Sistema Natação Clóvis
+   ============================================ */
+
+/* Reset e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #FFFFFF;
+    color: #333333;
+    display: flex;
+    height: 100vh;
+    padding: 2%;
+}
+
+/* ============================================
+   SIDEBAR (Menu Lateral)
+   ============================================ */
+
+.sidebar {
+    width: 300px;
+    background-color: #1EB9FE;
+    display: flex;
+    flex-direction: column;
+    min-height: 90vh;
+    border-radius: 15px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 50px;
+}
+
+.sidebar h1 {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.sidebar > div:first-of-type {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.sidebar a:hover {
+    background-color: #B7E8FF;
+    color: #3949AB;
+}
+
+.btn-logout {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #B7E8FF;
+    color: #3949AB;
+}
+
+.sidebar img {
+    width: 100%;
+    max-width: 150px;
+    margin-top: 40px;
+    align-items: center;
+    margin-left: 20px;
+}
+
+/* ============================================
+   ÁREA DE CONTEÚDO PRINCIPAL
+   ============================================ */
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+/* ============================================
+   HEADER (Título e Busca)
+   ============================================ */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.page-header .actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-primary {
+    background-color: #00B0FF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #07a2e9;
+}
+
+.input-search {
+    padding: 12px 16px;
+    border: none;
+    background-color: #f0f2f5;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 300px;
+    outline: none;
+}
+
+.input-search::placeholder {
+    color: #9E9E9E;
+}
+
+/* ============================================
+   TABELA/DADOS
+   ============================================ */
+
+.table-row {
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.table-data {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: #f0f2f5;
+    padding: 10px;
+    border-radius: 6px;
+    padding-left: 18px;
+}
+
+.table-row-title {
+    flex: 1;
+    font-size: 16px;
+    color: #333333;
+    font-weight: 500;
+}
+
+.table-badge {
+    background-color: #00B0FF;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.table-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ============================================
+   BOTÕES DE AÇÃO
+   ============================================ */
+
+.btn-edit {
+    background-color: #3949AB;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #08386f;
+}
+
+.btn-delete {
+    background-color: #AB3943;
+    color: white;
+    border: none;
+    padding: 16px 26px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #6c292f;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #EAF0F4;
+    padding: 0;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Modal específico de Fases - maior */
+#modalFase .modal-content {
+    max-width: 900px;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+.modal-content.close {
+    animation: modalSlideOut 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 24px 30px 0px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    padding-top: 30px;
+    font-size: 35px;
+    font-weight: 600;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ============================================
+   FORMULÁRIO
+   ============================================ */
+
+.form-content {
+    padding: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #000000;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 0px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #ffffff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    background-color: rgba(232, 230, 230, 0.621);
+}
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Input de opção (ex: lista de professores) */
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
+}
+
+.option-item:hover {
+    background-color: rgba(232, 230, 230, 0.3);
+}
+
+.option-item label {
+    display: inline-flex;
+    align-items: center;
+    font-weight: normal;
+    margin-bottom: 0;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+/* Container de opções */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background-color: #FFFFFF;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.options-container p {
+    display: block;
+    font-weight: 500;
+    color: #000000;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Password input com toggle */
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    transition: opacity 0.3s ease;
+}
+
+.toggle-password:hover {
+    opacity: 0.7;
+}
+
+.toggle-password .password-icon {
+    font-size: 20px;
+}
+
+/* ============================================
+   BOTÕES DO MODAL
+   ============================================ */
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+.btn-cancel {
+    background-color: #ffffff;
+    color: #000000;
+    border: 0px solid #000000;
+    padding: 12px 70px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #f5f5f5;
+    border-color: #bbb;
+}
+
+.btn-save {
+    background-color: #155A92;
+    color: white;
+    border: none;
+    padding: 12px 80px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #0d385b;
+}
+
+/* Campo CEP com largura menor */
+.input-cep {
+    max-width: 200px;
+}
+
+/* ============================================
+   RESPONSIVIDADE - TABLET
+   ============================================ */
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .sidebar > div:first-of-type {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .sidebar a,
+    .btn-logout {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header .actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .input-search {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .table-row {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .table-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .form-content {
+        padding: 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+
+    .input-cep {
+        max-width: 100%;
+    }
+}
+
+/* ============================================
+   ESTILOS DO MODAL DE FASES
+   ============================================ */
+
+.modal-fases-layout {
+    display: flex;
+    gap: 50px;
+}
+
+.modal-fases-left,
+.modal-fases-right {
+    flex: 1;
+}
+
+/* Upload de Imagem */
+.image-upload-container {
+    margin-top: 10px;
+}
+
+.image-upload-box {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-upload-box:hover {
+    background-color: #F5F5F5;
+}
+
+.image-upload-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-upload-icon {
+    color: #B0B0B0;
+    font-size: 48px;
+}
+
+/* Atividades */
+.activities-label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #000000;
+    font-size: 14px;
+}
+
+.activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.activity-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.activity-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #FFFFFF;
+    font-family: inherit;
+}
+
+.activity-input:focus {
+    outline: none;
+    background-color: rgba(232, 230, 230, 0.621);
+}
+
+.activity-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.activity-btn-edit,
+.activity-btn-delete {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.activity-btn-edit {
+    background-color: #155A92;
+    color: white;
+}
+
+.activity-btn-edit:hover {
+    opacity: 0.9;
+}
+
+.activity-btn-delete {
+    background-color: #AB3943;
+    color: white;
+}
+
+.activity-btn-delete:hover {
+    opacity: 0.9;
+}
+
+.activity-btn-edit .material-symbols-outlined,
+.activity-btn-delete .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.btn-add-activity {
+    background: none;
+    border: none;
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: opacity 0.2s ease;
+}
+
+.btn-add-activity:hover {
+    opacity: 0.8;
+}
+
+/* Responsividade para o modal de fases */
+@media (max-width: 1024px) {
+    .modal-fases-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+/* ============================================
+   RESPONSIVIDADE - MOBILE
+   ============================================ */
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 20px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .page-header .actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .input-search {
+        width: 100%;
+    }
+
+    .modal-content {
+        margin: 5% auto;
+        width: 98%;
+    }
+
+    .modal-header h2 {
+        font-size: 20px;
+    }
+}
+
+/* Estilos para paginação */

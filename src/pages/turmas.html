@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turmas | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>Olá, Fulano</h1>
+        <div>
+            <a href="#">Alunos</a>
+            <a href="#">Aprovação de Progresso</a>
+            <a href="fases.html">Fases</a>
+            <a href="turmas.html">Turmas</a>
+            <a href="unidades.html">Unidades</a>
+            <a href="usuarioSistema.html">Usuários do Sistema</a>
+            <button class="btn-logout">Sair</button>
+        </div>
+        <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis">
+    </div>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Turmas</h1>
+            <div class="actions">
+                <button class="btn-primary" id="btnAdicionar">+ Adicionar novo</button>
+                <input type="search" name="pesquisaTurmas" id="pesquisaTurmas" class="input-search" placeholder="Buscar por turmas...">
+            </div>
+        </div>
+        <div id="turmasContainer">
+            </div>
+        <div id="paginationContainer">
+            </div>
+    </div>
+
+    <div id="modalTurmas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar Turma</h2>
+            </div>
+            <div class="form-content">
+                <form id="formTurmas">
+                    <div class="form-group">
+                        <label for="turma">Nome da Turma</label>
+                        <input type="text" id="turma" name="turma" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="horaAula">Horário da Aula</label>
+                        <input type="time" id="horaAula" name="horaAula" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unidade">Unidade</label>
+                        <select id="unidade" name="unidade" required>
+                            <option value="">Selecione a unidade</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="options-container" id="professoresContainer">
+                            <p>Selecione o professor responsável (Um por turma):</p>
+                            </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/utils/pagination.js"></script>
+    <script type="module" src="../js/turmas.js"></script>
+</body>
+
+</html>
