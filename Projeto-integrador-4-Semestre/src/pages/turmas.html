@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turmas | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>Olá, Fulano</h1>
+        <div>
+            <a href="alunos.html" class="sidebar-link">Alunos</a>
+            <a href="fases.html" class="sidebar-link">Fases</a>
+            <a href="aprovacaoProgresso.html" class="sidebar-submenu" id="linkAprovacoes">Aprovações pendentes</a>
+            <a href="turmas.html" class="sidebar-link">Turmas</a>
+            <a href="unidades.html" class="sidebar-link">Unidades</a>
+            <a href="usuarioSistema.html" class="sidebar-link">Usuários do Sistema</a>
+            <button class="btn-logout">Sair</button>
+        </div>
+        <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis">
+    </div>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Turmas</h1>
+            <div class="actions">
+                <button class="btn-filter" id="btnFiltro" title="Filtros">
+                    <span class="material-symbols-outlined">tune</span>
+                </button>
+                <button class="btn-primary" id="btnAdicionar">+ Adicionar novo</button>
+                <input type="search" name="pesquisaTurmas" id="pesquisaTurmas" class="input-search" placeholder="Buscar por turmas...">
+            </div>
+        </div>
+        <div id="turmasContainer">
+            <!-- Lista de turmas será renderizada aqui -->
+        </div>
+        <div id="paginationContainer">
+            <!-- Controles de paginação serão renderizados aqui -->
+        </div>
+    </div>
+
+    <div id="modalTurmas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar Turma</h2>
+            </div>
+            <div class="form-content">
+                <form id="formTurmas">
+                    <div class="form-group">
+                        <label for="turma">Turma</label>
+                        <input type="text" id="turma" name="turma" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="unidade">Unidade</label>
+                        <select id="unidade" name="unidade" required>
+                            <option value="">Selecione a unidade</option>
+                            <option value="Unidade Selles">Unidade Selles</option>
+                            <option value="Unidade Lorena">Unidade Lorena</option>
+                            <option value="Unidade Portal">Unidade Portal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="options-container">
+                            <p>Selecione o(s) professor(es) responsáveis:</p>
+                            <div class="option-item">
+                                <input type="checkbox" id="professor1" name="professor" value="Professor 1">
+                                <label for="professor1">Professor 1</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="professor2" name="professor" value="Professor 2">
+                                <label for="professor2">Professor 2</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="professor3" name="professor" value="Professor 3">
+                                <label for="professor3">Professor 3</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/utils/pagination.js"></script>
+    <script src="../js/turmas.js"></script>
+</body>
+
+</html>

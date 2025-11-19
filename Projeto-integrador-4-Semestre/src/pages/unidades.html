@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidades | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>Olá, Fulano</h1>
+        <div>
+            <a href="alunos.html" class="sidebar-link">Alunos</a>
+            <a href="fases.html" class="sidebar-link">Fases</a>
+            <a href="aprovacaoProgresso.html" class="sidebar-submenu" id="linkAprovacoes">Aprovações pendentes</a>
+            <a href="turmas.html" class="sidebar-link">Turmas</a>
+            <a href="unidades.html" class="sidebar-link">Unidades</a>
+            <a href="usuarioSistema.html" class="sidebar-link">Usuários do Sistema</a>
+            <button class="btn-logout">Sair</button>
+        </div>
+        <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis">
+    </div>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Unidades</h1>
+            <div class="actions">
+                <button class="btn-primary" id="btnAdicionar">+ Adicionar novo</button>
+                <input type="search" name="pesquisarUnidades" id="pesquisarUnidades" class="input-search" placeholder="Buscar por unidade...">
+            </div>
+        </div>
+        <div id="unidadesContainer">
+            <!-- Lista de unidades será renderizada aqui -->
+        </div>
+        <div id="paginationContainer">
+            <!-- Controles de paginação serão renderizados aqui -->
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Unidade -->
+    <div id="modalUnidade" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar Unidade</h2>
+            </div>
+            <div class="form-content">
+                <form id="formUnidade">
+                    <div class="form-group">
+                        <label for="nomeUnidade">Nome da Unidade</label>
+                        <input type="text" id="nomeUnidade" name="nomeUnidade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cep">CEP</label>
+                        <input type="text" id="cep" name="cep" class="input-cep" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/utils/pagination.js"></script>
+    <script src="../js/unidades.js"></script>
+</body>
+
+</html>

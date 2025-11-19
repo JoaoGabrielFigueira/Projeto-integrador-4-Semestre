@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Aluno | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/page-standalone.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+</head>
+
+<body>
+    <!-- Cabeçalho com barra azul -->
+    <header class="edit-header">
+        <div class="header-content">
+            <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis" class="header-logo">
+            <button class="btn-close" id="btnClose" title="Fechar">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Container principal -->
+    <div class="edit-container">
+        <!-- Seção: Editar Aluno -->
+        <section class="edit-section">
+            <h2 class="section-title" id="sectionTitle">Editar Aluno</h2>
+            <form id="formEditarAluno" class="edit-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nomeAluno">Nome do aluno</label>
+                        <input type="text" id="nomeAluno" name="nomeAluno" placeholder="Nome completo do aluno" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataNascimento">Data de nascimento</label>
+                        <input type="date" id="dataNascimento" name="dataNascimento" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nomeResponsavel">Nome do responsável</label>
+                        <input type="text" id="nomeResponsavel" name="nomeResponsavel" placeholder="Nome do responsável" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone (WhatsApp)</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" placeholder="email@exemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="faseEntrada">Fase que entrou</label>
+                        <select id="faseEntrada" name="faseEntrada" required>
+                            <option value="">Selecione a fase</option>
+                            <option value="Golfinho Baby">Golfinho Baby</option>
+                            <option value="Golfinho Infantil">Golfinho Infantil</option>
+                            <option value="Foca Iniciante">Foca Iniciante</option>
+                            <option value="Estrela do Mar">Estrela do Mar</option>
+                            <option value="Peixe Dourado">Peixe Dourado</option>
+                            <option value="Marinheiro">Marinheiro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="unidade">Unidade</label>
+                        <select id="unidade" name="unidade" required>
+                            <option value="">Selecione a unidade</option>
+                            <option value="Unidade Portal">Unidade Portal</option>
+                            <option value="Unidade Selles">Unidade Selles</option>
+                            <option value="Unidade Lorena">Unidade Lorena</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="turma">Turma</label>
+                        <select id="turma" name="turma" required>
+                            <option value="">Selecione a turma</option>
+                            <option value="2ª e 4ª – 19h30">2ª e 4ª – 19h30</option>
+                            <option value="3ª e 5ª – 14h00">3ª e 5ª – 14h00</option>
+                            <option value="2ª e 4ª – 9h30">2ª e 4ª – 9h30</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dataMatricula">Data da matrícula</label>
+                        <input type="date" id="dataMatricula" name="dataMatricula" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="5" placeholder="Descrição do aluno..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save-aluno">Salvar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Seção: Atualizar atividades -->
+        <section class="edit-section">
+            <h2 class="section-title">Atualizar atividades</h2>
+            <form id="formAtualizarAtividades" class="edit-form">
+                <div class="form-group">
+                    <label for="faseAtual">Fase atual</label>
+                    <select id="faseAtual" name="faseAtual" required>
+                        <option value="">Selecione a fase atual</option>
+                        <option value="Golfinho Baby">Golfinho Baby</option>
+                        <option value="Golfinho Infantil">Golfinho Infantil</option>
+                        <option value="Foca Iniciante">Foca Iniciante</option>
+                        <option value="Estrela do Mar">Estrela do Mar</option>
+                        <option value="Peixe Dourado">Peixe Dourado</option>
+                        <option value="Marinheiro">Marinheiro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="professores-label">Selecione o(s) professor(es) responsáveis:</label>
+                    <div class="professores-container">
+                        <div class="professores-column">
+                            <div class="option-item">
+                                <input type="checkbox" id="profMergulhar" name="professores" value="Mergulhar">
+                                <label for="profMergulhar">Mergulhar</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="profFlutuar" name="professores" value="Flutuar">
+                                <label for="profFlutuar">Flutuar</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="profNadar" name="professores" value="Nadar">
+                                <label for="profNadar">Nadar</label>
+                            </div>
+                        </div>
+                        <div class="professores-column">
+                            <div class="option-item">
+                                <input type="checkbox" id="profRespirar" name="professores" value="Respirar">
+                                <label for="profRespirar">Respirar</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="profImersao" name="professores" value="Imersão">
+                                <label for="profImersao">Imersão</label>
+                            </div>
+                            <div class="option-item">
+                                <input type="checkbox" id="profCoordenacao" name="professores" value="Coordenação">
+                                <label for="profCoordenacao">Coordenação</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-registrar-atividades">Registrar atividades</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script src="../js/editarAluno.js"></script>
+</body>
+
+</html>
+
+
