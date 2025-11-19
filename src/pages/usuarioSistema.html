@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários do Sistema | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&icon_names=visibility,visibility_off&display=block"/>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h1>Olá, Fulano</h1>
+        <div>
+            <a href="#">Alunos</a>
+            <a href="#">Aprovação de Progresso</a>
+            <a href="fases.html">Fases</a>
+            <a href="turmas.html">Turmas</a>
+            <a href="unidades.html">Unidades</a>
+            <a href="usuarioSistema.html">Usuários do Sistema</a>
+            <button class="btn-logout">Sair</button>
+        </div>
+        <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis">
+    </div>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Usuários do sistema</h1>
+            <div class="actions">
+                <button class="btn-primary" id="btnAdicionar">+ Adicionar novo</button>
+                <input type="search" name="pesquisaUsuarios" id="pesquisaUsuarios" class="input-search"
+                    placeholder="Buscar por usuários...">
+            </div>
+        </div>
+        <div id="usuariosContainer">
+            <!-- Lista de usuários será renderizada aqui -->
+        </div>
+        <div id="paginationContainer">
+            <!-- Controles de paginação serão renderizados aqui -->
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Usuário -->
+    <div id="modalUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar Usuário</h2>
+            </div>
+            <div class="form-content">
+                <form id="formUsuario">
+                    <div class="form-group">
+                        <label for="nomeCompleto">Nome Completo</label>
+                        <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nivelAcesso">Nível de acesso</label>
+                        <select id="nivelAcesso" name="nivelAcesso" required>
+                            <option value="">Selecione o nível</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Secretaria">Secretaria</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="senha">Senha</label>
+                            <div class="password-input">
+                                <input type="password" id="senha" name="senha" required>
+                                <span class="toggle-password" data-target="senha">
+                                    <span class="material-symbols-outlined password-icon">visibility_off</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmarSenha">Confirmar senha</label>
+                            <div class="password-input">
+                                <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+                                <span class="toggle-password" data-target="confirmarSenha">
+                                    <span class="material-symbols-outlined password-icon">visibility_off</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/utils/pagination.js"></script>
+    <script type="module" src="../js/usuarioSistema.js"></script>
+</body>
+
+</html>
