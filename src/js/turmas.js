@@ -194,7 +194,6 @@ async function fetchTurmas(searchTerm = '') {
         const response = await TurmaAPI.getAll();
         if (!response.ok) {
             console.error('Erro ao buscar turmas:', response.error);
-            // Alerta de erro de conexão (visto em image_6224e3.png)
             if (searchTerm === '') {
                 alert('Erro ao carregar as turmas. Verifique o backend e o console.');
             }

@@ -31,6 +31,8 @@ function abrirModalEditar(unitData) {
     // Preencher formulário com dados da unidade
     document.getElementById('nomeUnidade').value = unitData.nomeUnidade || '';
     document.getElementById('cep').value = unitData.cepUnidade || '';
+    document.getElementById('numeroUnidade').value = unitData.numeroUnidade || '';
+    document.getElementById('telefoneUnidade').value = unitData.telefoneUnidade || '';
 
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';

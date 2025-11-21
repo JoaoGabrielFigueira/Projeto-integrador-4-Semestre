@@ -28,7 +28,7 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         }
         return { ok: true, data: responseData };
     } catch (error) {
-        return { ok: false, error: error.message };
+        return { ok: false, status: response.status, error: error.message };
     }
 }
 
@@ -68,6 +68,8 @@ const FaseAPI = {
     create: (faseData) => apiRequest('/fases', 'POST', faseData),
     update: (id, faseData) => apiRequest(`/fases/${id}`, 'PUT', faseData),
     remove: (id) => apiRequest(`/fases/${id}`, 'DELETE'),
+    getById: (id) => apiRequest(`/fases/${id}`),
+    updateAtividade: (idAtividade, data) => apiRequest(`/atividades/${idAtividade}`, 'PUT', data),
 };
 
 export { AuthAPI, CargoAPI, UsuarioAPI, UnidadeAPI, TurmaAPI, FaseAPI };

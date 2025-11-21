@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Presença | Natação Clóvis</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/page-standalone.css">
+    <link rel="stylesheet" href="../styles/chamada.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+</head>
+
+<body>
+    <!-- Cabeçalho com barra azul -->
+    <header class="page-header-standalone">
+        <div class="header-content">
+            <img src="../img/logoSemFundo.png" alt="Logo da Metodologia Clóvis" class="header-logo">
+            <button class="btn-close" id="btnClose" title="Fechar">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Container principal -->
+    <div class="page-container-standalone">
+        <!-- Seção: Lista de Presença -->
+        <section class="page-section-standalone">
+            <h2 class="page-title-standalone">Lista de presença</h2>
+            
+            <!-- Seleção de Data -->
+            <div class="date-selection">
+                <label class="date-label">Data da aula:</label>
+                <input type="date" id="dateInput" class="date-input" />
+                <button class="btn-print" id="btnGerarRelatorio" title="Gerar relatório">
+                    <span class="material-symbols-outlined">print</span>
+                </button>
+            </div>
+
+            <!-- Lista de Alunos -->
+            <div class="attendance-list" id="attendanceList">
+                <!-- Lista será renderizada aqui -->
+            </div>
+
+            <!-- Botão Registrar -->
+            <div class="form-actions">
+                <button type="button" class="btn-registrar-presenca" id="btnRegistrarPresenca">Registrar presença</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="../js/chamada.js"></script>
+</body>
+
+</html>

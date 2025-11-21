@@ -1,0 +1,343 @@
+/* ============================================
+   ESTILOS GENÉRICOS - PÁGINAS STANDALONE
+   (Editar Aluno, Chamada, etc.)
+   ============================================ */
+
+/* Reset do body para página standalone */
+body {
+    background-color: #F5F5F5 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    flex-direction: column !important;
+}
+
+/* ============================================
+   CABEÇALHO COM BARRA AZUL
+   ============================================ */
+
+.edit-header,
+.page-header-standalone {
+    background-color: #1EB9FE;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    height: 50px;
+    width: auto;
+}
+
+.btn-close {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    width: 40px;
+    height: 40px;
+}
+
+.btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-close .material-symbols-outlined {
+    font-size: 28px;
+    color: white;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+
+.edit-container,
+.page-container-standalone {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background-color: #F5F5F5;
+}
+
+/* ============================================
+   SEÇÕES
+   ============================================ */
+
+.edit-section,
+.page-section-standalone {
+    padding: 40px;
+    padding-bottom: 0px;
+}
+
+.section-title,
+.page-title-standalone {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+/* ============================================
+   FORMULÁRIO
+   ============================================ */
+
+.edit-form,
+.page-form-standalone {
+    width: 100%;
+}
+
+.edit-form .form-group,
+.page-form-standalone .form-group {
+    margin-bottom: 20px;
+}
+
+.edit-form .form-group label,
+.page-form-standalone .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #000000;
+    font-size: 14px;
+}
+
+.edit-form .form-group input,
+.edit-form .form-group select,
+.edit-form .form-group textarea,
+.page-form-standalone .form-group input,
+.page-form-standalone .form-group select,
+.page-form-standalone .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #FFFFFF;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.edit-form .form-group input:focus,
+.edit-form .form-group select:focus,
+.edit-form .form-group textarea:focus,
+.page-form-standalone .form-group input:focus,
+.page-form-standalone .form-group select:focus,
+.page-form-standalone .form-group textarea:focus {
+    outline: none;
+    border-color: #1EB9FE;
+    background-color: #F8F9FA;
+}
+
+.edit-form .form-group textarea,
+.page-form-standalone .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.edit-form .form-row,
+.page-form-standalone .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* ============================================
+   PROFESSORES (CHECKBOXES EM DUAS COLUNAS)
+   ============================================ */
+
+.professores-label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #000000;
+    font-size: 14px;
+}
+
+.professores-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    background-color: #FFFFFF;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+}
+
+.professores-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.professores-container .option-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 6px;
+}
+
+.professores-container .option-item:hover {
+    background-color: #F5F5F5;
+}
+
+.professores-container .option-item input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.professores-container .option-item label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    padding-bottom: 40px;
+}
+
+.btn-save-aluno,
+.btn-registrar-atividades,
+.btn-registrar-presenca {
+    background-color: #155A92;
+    color: white;
+    border: none;
+    padding: 14px 60px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn-save-aluno:hover,
+.btn-registrar-atividades:hover,
+.btn-registrar-presenca:hover {
+    background-color: #0d385b;
+}
+
+.btn-registrar-atividades,
+.btn-registrar-presenca {
+    padding: 14px 80px;
+}
+
+/* ============================================
+   RESPONSIVIDADE - TABLET
+   ============================================ */
+
+@media (max-width: 768px) {
+    .header-content {
+        padding: 15px 20px;
+    }
+
+    .header-logo {
+        height: 40px;
+    }
+
+    .edit-container,
+    .page-container-standalone {
+        padding: 30px 20px;
+    }
+
+    .edit-section,
+    .page-section-standalone {
+        padding: 30px 20px;
+        margin-bottom: 30px;
+    }
+
+    .section-title,
+    .page-title-standalone {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    .edit-form .form-row,
+    .page-form-standalone .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .professores-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .btn-save-aluno,
+    .btn-registrar-atividades,
+    .btn-registrar-presenca {
+        width: 100%;
+        padding: 14px 20px;
+    }
+}
+
+/* ============================================
+   RESPONSIVIDADE - MOBILE
+   ============================================ */
+
+@media (max-width: 480px) {
+    .header-content {
+        padding: 12px 15px;
+    }
+
+    .header-logo {
+        height: 35px;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+    }
+
+    .btn-close .material-symbols-outlined {
+        font-size: 24px;
+    }
+
+    .edit-container,
+    .page-container-standalone {
+        padding: 20px 15px;
+    }
+
+    .edit-section,
+    .page-section-standalone {
+        padding: 25px 15px;
+        margin-bottom: 25px;
+    }
+
+    .section-title,
+    .page-title-standalone {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+}

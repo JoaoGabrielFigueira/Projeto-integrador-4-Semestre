@@ -18,6 +18,7 @@ function abrirModalAdicionar() {
     isEditMode = false;
     modalTitulo.textContent = 'Adicionar Fase';
     formFase.reset();
+    document.getElementById('activitiesList').innerHTML = '';
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
@@ -28,11 +29,34 @@ function abrirModalEditar(faseData) {
     modalTitulo.textContent = 'Editar Fase';
     currentFaseId = faseData.id;
 
-    // Preencher formulário com dados da fase
     document.getElementById('nomeFase').value = faseData.nomeFase || '';
-    
-    // Aqui você pode adicionar lógica para preencher outras áreas do formulário
-    // como atividades da fase, imagem, etc.
+    document.getElementById('minIdade').value = faseData.minIdade || '';
+    document.getElementById('maxIdade').value = faseData.maxIdade || '';
+
+    const activitiesList = document.getElementById('activitiesList');
+    activitiesList.innerHTML = '';
+
+    if (faseData.atividades && faseData.atividades.length > 0) {
+        faseData.atividades.forEach(atividade => {
+            const row = document.createElement('div');
+            row.className = 'activity-row';
+            row.innerHTML = `
+                <input type="text" class="activity-input" data-id="${atividade.id}" value="${atividade.descricao}" readonly>
+                <div class="activity-actions">
+                    <button type="button" class="activity-btn-edit">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button type="button" class="activity-btn-delete">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            `;
+            activitiesList.appendChild(row);
+        });
+    }
+
+    attachActivityEditListeners();
+    attachActivityDeleteListeners();
 
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -41,31 +65,19 @@ function abrirModalEditar(faseData) {
 // Fechar modal
 function fecharModal() {
     const modalContent = modal.querySelector('.modal-content');
-    
-    // Adicionar classe de animação de fechamento
     modalContent.classList.add('close');
-    
-    // Aguardar a animação terminar (300ms) antes de esconder o modal
     setTimeout(() => {
         modal.classList.remove('show');
         modalContent.classList.remove('close');
         document.body.style.overflow = 'auto';
         formFase.reset();
+        document.getElementById('activitiesList').innerHTML = '';
         isEditMode = false;
         currentFaseId = null;
     }, 300);
 }
 
-// Excluir fase
-function excluirFase() {
-    if (confirm('Tem certeza que deseja excluir esta fase?')) {
-        console.log('Fase excluída');
-        // Aqui você pode adicionar a lógica para excluir a fase
-        alert('Fase excluída com sucesso!');
-    }
-}
-
-// --- Paginação e integração (nova) ---
+// --- Paginação ---
 const ITEMS_PER_PAGE_FASES = 5;
 let currentFasesPage = 1;
 let allFases = [];
@@ -73,22 +85,16 @@ let allFases = [];
 async function fetchFases(searchTerm = '') {
     try {
         const response = await FaseAPI.getAll();
-
-        if (response.ok) {
-            let fases = response.data;
-
-            if (searchTerm) {
-                return fases.filter(f => f.nomeFase.toLowerCase().includes(searchTerm.toLowerCase()));
-            }
-            return fases;
-        }else {
-           console.error('Erro ao buscar fases:', response.error);
-           return [];
+        if (!response.ok) throw new Error(response.error);
+        let fases = response.data;
+        if (searchTerm) {
+            fases = fases.filter(f => f.nomeFase.toLowerCase().includes(searchTerm.toLowerCase()));
         }
-    }catch (err) {
-            console.error('Erro ao buscar fases:', err);
-            return [];
-        }
+        return fases;
+    } catch (err) {
+        console.error('Erro ao buscar fases:', err);
+        return [];
+    }
 }
 
 function renderFases(fases) {
@@ -112,22 +118,31 @@ function renderFases(fases) {
         container.querySelector('.page-header').insertAdjacentHTML('afterend', `<div class="table-content">${fasesHTML}</div>`);
     }
 
-    // Anexa listeners aos botões recém-criados
     attachEventListenersFases();
 }
 
+// --- Botões editar/excluir fases ---
 function attachEventListenersFases() {
     document.querySelectorAll('.table-actions .btn-edit').forEach(btn => {
         btn.removeEventListener('click', null);
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function () {
             let faseData = {};
-            if (this.getAttribute('data-user')) {
-                try { faseData = JSON.parse(this.getAttribute('data-user')); } catch (e) { }
+            const dataAttr = this.getAttribute('data-user');
+            if (dataAttr) {
+                try { faseData = JSON.parse(dataAttr); } catch (e) { console.warn('Erro parse data-user', e); }
             }
-            if (!faseData.nomeFase) {
-                const tableRow = this.closest('.table-row');
-                faseData = { id: parseInt(tableRow.dataset.id), nomeFase: tableRow.querySelector('.table-row-title').textContent };
+
+            if (!faseData.minIdade && !faseData.maxIdade && (!faseData.atividades || faseData.atividades.length === 0)) {
+                const row = this.closest('.table-row');
+                const id = parseInt(row.dataset.id);
+                if (!isNaN(id)) {
+                    const result = await FaseAPI.getById(id);
+                    if (result.ok) abrirModalEditar(result.data);
+                    else alert('Erro ao carregar fase');
+                    return;
+                }
             }
+
             abrirModalEditar(faseData);
         });
     });
@@ -136,17 +151,13 @@ function attachEventListenersFases() {
         btn.removeEventListener('click', null);
         btn.addEventListener('click', async (e) => {
             const id = parseInt(e.target.closest('.table-row').dataset.id);
-            if (confirm('Tem certeza que deseja excluir esta fase?')) {
-
-                const result = await FaseAPI.remove(id);
-                if (result.ok) {
-                    alert('Fase excluída com sucesso!');
-                    const fasesAtualizadas = await fetchFases();    
-                    renderFasesWithPagination(fasesAtualizadas);
-                }else {
-                    alert(`Erro ao excluir fase: ${result.error}`);
-                }
-            }
+            if (!confirm('Tem certeza que deseja excluir esta fase?')) return;
+            const result = await FaseAPI.remove(id);
+            if (result.ok) {
+                alert('Fase excluída com sucesso!');
+                const fasesAtualizadas = await fetchFases();
+                renderFasesWithPagination(fasesAtualizadas);
+            } else alert(`Erro ao excluir fase: ${result.error}`);
         });
     });
 }
@@ -162,13 +173,13 @@ async function renderFasesWithPagination(fases) {
     });
 }
 
-// Função para adicionar nova linha de atividade
+// --- Atividades ---
 function adicionarLinhaAtividade() {
     const activitiesList = document.getElementById('activitiesList');
     const newActivityRow = document.createElement('div');
     newActivityRow.className = 'activity-row';
     newActivityRow.innerHTML = `
-        <input type="text" class="activity-input" placeholder="Insira a atividade">
+        <input type="text" class="activity-input" placeholder="Insira a atividade" readonly>
         <div class="activity-actions">
             <button type="button" class="activity-btn-edit">
                 <span class="material-symbols-outlined">edit</span>
@@ -179,137 +190,85 @@ function adicionarLinhaAtividade() {
         </div>
     `;
     activitiesList.appendChild(newActivityRow);
+    attachActivityDeleteListeners();
+    attachActivityEditListeners();
 }
 
-// Event listeners
+function attachActivityEditListeners() {
+    document.querySelectorAll('.activity-btn-edit').forEach(btn => {
+        btn.removeEventListener('click', null);
+        btn.addEventListener('click', async function () {
+            const row = this.closest('.activity-row');
+            const input = row.querySelector('.activity-input');
+            const idAtividade = input.getAttribute('data-id');
+
+            if (input.hasAttribute('readonly')) {
+                input.removeAttribute('readonly');
+                input.focus();
+                this.querySelector('span').textContent = 'check';
+            } else {
+                input.setAttribute('readonly', true);
+                this.querySelector('span').textContent = 'edit';
+                if (!idAtividade) return; // nova atividade salva ao salvar a fase
+                try {
+                    const result = await FaseAPI.updateAtividade(parseInt(idAtividade), { descricao: input.value });
+                    if (!result.ok) alert(`Erro ao atualizar atividade: ${result.error}`);
+                } catch (err) {
+                    console.error('Erro ao atualizar atividade:', err);
+                }
+            }
+        });
+    });
+}
+
+function attachActivityDeleteListeners() {
+    document.querySelectorAll('.activity-btn-delete').forEach(btn => {
+        btn.removeEventListener('click', null);
+        btn.addEventListener('click', function () {
+            const row = this.closest('.activity-row');
+            row.remove();
+        });
+    });
+}
+
+// --- Event listeners DOM ---
 document.addEventListener('DOMContentLoaded', async function () {
-    // Carregar fases iniciais com paginação
-    try {
-        const fases = await fetchFases();
-        renderFasesWithPagination(fases);
-    } catch (err) {
-        console.error('Erro ao carregar fases iniciais:', err);
-    }
-
-    // Botão adicionar novo
-    if (addBtn) {
-        addBtn.addEventListener('click', abrirModalAdicionar);
-    }
-
-    // Buscar fases com debounce
     const searchInput = document.getElementById('pesquisarFases');
     if (searchInput) {
         let timeoutId;
         searchInput.addEventListener('input', (e) => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(async () => {
-                try {
-                    currentFasesPage = 1;
-                    const results = await fetchFases(e.target.value);
-                    renderFasesWithPagination(results);
-                } catch (err) {
-                    console.error('Erro na busca de fases:', err);
-                }
+                currentFasesPage = 1;
+                const results = await fetchFases(e.target.value);
+                renderFasesWithPagination(results);
             }, 300);
         });
     }
 
-    // Botões editar
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            // Pegar dados do atributo data-user se disponível
-            let faseData = {};
-            
-            if (btn.getAttribute('data-user')) {
-                try {
-                    faseData = JSON.parse(btn.getAttribute('data-user'));
-                } catch (e) {
-                    console.error('Erro ao parsear data-user:', e);
-                }
-            }
-            
-            // Se não houver data-user, usar dados de exemplo
-            if (!faseData.nomeFase) {
-                // Pegar o nome da fase da linha da tabela
-                const tableRow = btn.closest('.table-row');
-                const faseName = tableRow.querySelector('.table-row-title').textContent;
-                
-                faseData = {
-                    id: 1,
-                    nomeFase: faseName,
-                    atividades: [] // Adicione outras propriedades conforme necessário
-                };
-            }
-            
-            abrirModalEditar(faseData);
-        });
-    });
+    if (addBtn) addBtn.addEventListener('click', abrirModalAdicionar);
+    if (cancelBtn) cancelBtn.addEventListener('click', fecharModal);
 
-    // Botões excluir
-    deleteBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            excluirFase();
-        });
-    });
-
-    // Fechar modal com botão Cancelar
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', fecharModal);
-    }
-
-    // Fechar modal clicando fora dele
     if (modal) {
-        window.addEventListener('click', function (event) {
-            if (event.target === modal) {
-                fecharModal();
-            }
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) fecharModal();
         });
     }
 
-    // Botão adicionar atividade
     const btnAddActivity = document.getElementById('btnAddActivity');
-    if (btnAddActivity) {
-        btnAddActivity.addEventListener('click', adicionarLinhaAtividade);
-    }
+    if (btnAddActivity) btnAddActivity.addEventListener('click', adicionarLinhaAtividade);
 
-    // Upload de imagem
-    const imageUploadBox = document.getElementById('imageUploadBox');
-    const imagemMascote = document.getElementById('imagemMascote');
-    const imagePreview = document.getElementById('imagePreview');
-    
-    if (imageUploadBox && imagemMascote) {
-        imageUploadBox.addEventListener('click', function() {
-            imagemMascote.click();
-        });
+    // Carregar fases iniciais
+    const fases = await fetchFases();
+    renderFasesWithPagination(fases);
 
-        imagemMascote.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                    imageUploadBox.querySelector('.image-upload-icon').style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // Submeter formulário
+    // Form submit
     if (formFase) {
         formFase.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
             const nomeFase = document.getElementById('nomeFase').value;
-            
-            const minIdade = document.getElementById('minIdade').value.trim() !== '' 
-                            ? parseInt(document.getElementById('minIdade').value)
-                            : null;
-                            
-            const maxIdade = document.getElementById('maxIdade').value.trim() !== '' 
-                            ? parseInt(document.getElementById('maxIdade').value)
-                            : null;
+            const minIdade = document.getElementById('minIdade').value.trim() ? parseInt(document.getElementById('minIdade').value) : null;
+            const maxIdade = document.getElementById('maxIdade').value.trim() ? parseInt(document.getElementById('maxIdade').value) : null;
 
             const activityInputs = document.querySelectorAll('.activity-input');
             const atividades = [];
@@ -322,41 +281,27 @@ document.addEventListener('DOMContentLoaded', async function () {
                     });
                 }
             });
-            
-            const faseData = {
-                nomeFase: nomeFase,
-                minIdade: minIdade,
-                maxIdade: maxIdade,
-                atividades: atividades,
-            };
 
-            let result;
+            const faseData = { nomeFase, minIdade, maxIdade, atividades };
             const submitButton = formFase.querySelector('button[type="submit"]');
             submitButton.disabled = true;
 
             try {
-                if (isEditMode) {
-                    console.log("TOKEN SENDO ENVIADO NO UPDATE:", localStorage.getItem("authToken"));
-                    result = await FaseAPI.update(currentFaseId, faseData);
-                } else {
-                    result = await FaseAPI.create(faseData);
-                }
+                let result;
+                if (isEditMode) result = await FaseAPI.update(currentFaseId, faseData);
+                else result = await FaseAPI.create(faseData);
 
                 if (result.ok) {
                     alert(`Fase ${isEditMode ? 'atualizada' : 'criada'} com sucesso!`);
                     const fasesAtualizadas = await fetchFases();
                     renderFasesWithPagination(fasesAtualizadas);
-                }else {
-                    alert(`Erro ao salvar fase: ${result.error}`);
-                }
+                } else alert(`Erro ao salvar fase: ${result.error}`);
             } catch (err) {
                 console.error('Erro ao salvar fase:', err);
-                alert('Erro ao salvar fase. Por favor, tente novamente.');
-            }finally {
+            } finally {
                 submitButton.disabled = false;
-                fecharModal();              
+                fecharModal();
             }
         });
     }
 });
-

@@ -1,0 +1,214 @@
+/* ============================================
+   ESTILOS ESPECÍFICOS - PÁGINA DE CHAMADA
+   ============================================ */
+
+/* Seleção de Data */
+.date-selection {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.date-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+}
+
+.date-input {
+    background-color: #00B0FF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    min-width: 180px;
+    outline: none;
+}
+
+.date-input:hover {
+    background-color: #07a2e9;
+}
+
+.date-input:focus {
+    background-color: #07a2e9;
+}
+
+/* Estilização do calendário no Chrome/Edge */
+.date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 1;
+}
+
+.date-input::-webkit-datetime-edit-text {
+    color: white;
+    padding: 0 2px;
+}
+
+.date-input::-webkit-datetime-edit-month-field,
+.date-input::-webkit-datetime-edit-day-field,
+.date-input::-webkit-datetime-edit-year-field {
+    color: white;
+    padding: 0 2px;
+}
+
+.date-input::-webkit-datetime-edit-month-field:focus,
+.date-input::-webkit-datetime-edit-day-field:focus,
+.date-input::-webkit-datetime-edit-year-field:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+}
+
+/* Estilização para Firefox */
+.date-input::-moz-placeholder {
+    color: white;
+    opacity: 1;
+}
+
+.date-input::placeholder {
+    color: white;
+    opacity: 1;
+}
+
+
+/* Lista de Presença */
+.attendance-list {
+    margin-bottom: 30px;
+}
+
+.attendance-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.attendance-item-name-wrapper {
+    flex: 1;
+}
+
+.attendance-item-name {
+    background-color: #FFFFFF;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333333;
+    font-weight: 500;
+    width: 100%;
+    border: 1px solid #E0E0E0;
+    box-sizing: border-box;
+}
+
+.attendance-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-presente,
+.btn-faltou {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+}
+
+.btn-presente {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-presente:hover {
+    background-color: #45a049;
+}
+
+.btn-faltou {
+    background-color: #AB3943;
+    color: white;
+}
+
+.btn-faltou:hover {
+    background-color: #6c292f;
+}
+
+/* Indicador de seleção (círculo) */
+.attendance-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: inline-block;
+}
+
+.btn-presente.active .attendance-indicator {
+    background-color: white;
+}
+
+.btn-faltou.active .attendance-indicator {
+    background-color: white;
+}
+
+.btn-presente:not(.active) .attendance-indicator {
+    background-color: transparent;
+}
+
+.btn-faltou:not(.active) .attendance-indicator {
+    background-color: transparent;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .date-selection {
+        flex-wrap: wrap;
+    }
+
+    .attendance-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .attendance-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .date-selection {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-date {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .attendance-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .btn-presente,
+    .btn-faltou {
+        width: 100%;
+        justify-content: center;
+    }
+}
